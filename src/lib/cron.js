@@ -1,9 +1,9 @@
 import cron from 'cron';
 import https from 'https';
 
-const job = new cron.CronJob("*/14 * * *", function (){
+const job = new cron.CronJob("*/14 * * * *", function (){
     https.get(process.env.API_URL,(res) =>{
-        if(res.statusCode===200)
+        if(res.statusCode === 200)
             console.log("GET request successfully");
         else
             console.log("GET request failed", res.statusCode);
@@ -13,12 +13,12 @@ const job = new cron.CronJob("*/14 * * *", function (){
 
 export default job;
 
-//CRON JOB EXPLANATION:
-//Cron jobs are scheduled tasks that run periodically at fixed intervals
+// CRON JOB EXPLANATION:
+// Cron jobs are scheduled tasks that run periodically at fixed intervals
 // we want to send 1 GET request every 14 minutes
 
-//How to define a "Schedule"?
-//You define a schedule using a cron expression, which consisting of 5 field representing:
+// How to define a "Schedule"?
+// You define a schedule using a cron expression, which consisting of 5 field representing:
 
 //! MINUTE, HOUR, DAY OF THE MONTH, MONTH, DAY OF THE WEEK
 
