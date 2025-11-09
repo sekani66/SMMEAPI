@@ -74,12 +74,12 @@ export  function isValidSouthAfricaNumber(str) {
 
 
 export function isAlphaOnly(str) {
-  if (typeof str !== 'string') return false;
-  for (let i = 0; i < str.length; i++) {
+    if (typeof str !== 'string') return false;
+    for (let i = 0; i < str.length; i++) {
     const code = str.charCodeAt(i);
     if (code >= 65 && code <= 90) continue;
     if (code >= 97 && code <= 122) continue;
     return false;
-  }
-  return true;
+    }
+    return true;
 }
