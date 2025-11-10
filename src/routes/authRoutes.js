@@ -12,12 +12,12 @@ router.post("/register", async (req, res) =>{
     
     try
     {
-        const { name, surname, email, contact, password } = req.body;
-        if(!name || !surname || !email || !contact ||!password)
+        const { name, surname, email, contact, password, confirmPassword } = req.body;
+        if(!name || !surname || !email || !contact ||!password || confirmPassword)
         {
             return res.status(400).json(
                 {
-                    message: "All fields are required"
+                    message: "Please fill all fields"
                 }
             );
         }
@@ -59,6 +59,13 @@ router.post("/register", async (req, res) =>{
             return res.status(400).json(
                 {
                     message: "Password must be at least 6 characters long"
+                });
+        }
+        if(password !== confirmPassword)
+        {
+            return res.status(400).json(
+                {
+                    message: "Passwords do not match!"
                 });
         }
 

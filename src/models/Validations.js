@@ -7,8 +7,8 @@ function isAlphaNum(ch) {
 }
 
 function isDigit(ch) {
-  const c = ch.charCodeAt(0);
-  return c >= 48 && c <= 57; // '0'..'9'
+    const c = ch.charCodeAt(0);
+    return c >= 48 && c <= 57; // '0'..'9'
 }
 export  function isValidEmailControl(email) {
     if (typeof email !== 'string') return false;
@@ -50,36 +50,61 @@ export  function isValidEmailControl(email) {
 return true;
 }
 
+export function isNumeric(str)
+{
+    if(typeof str !== 'string')
+        return false;
+    if(str.length === 0)
+        return false;
+
+    for( let i = 0; i < str.length; i++){
+        const c = str[i];
+        if(!isDigit)
+            return false;
+    }
+    return true;
+}
 export  function isValidSouthAfricaNumber(str) {
-    if (typeof str !== 'string') return false;
-    if (str.length === 0) return false;
+        if (typeof str !== 'string')
+            return false;
+        if (str.length === 0) 
+            return false;
 
     let digits = '';
     for (let i = 0; i < str.length; i++) {
         const ch = str[i];
         if (isDigit(ch)) {
             digits += ch;
-        continue;
+            continue;
+        }
+
+        if (ch === '+' && i === 0) 
+            continue;
+        if (ch === ' ' || ch === '-' || ch === '(' || ch === ')') 
+            continue;
+        return false;
+        
     }
 
-    if (ch === '+' && i === 0) continue;
-    if (ch === ' ' || ch === '-' || ch === '(' || ch === ')') continue;
-    return false;
-    }
-
-    if (digits.length === 10 && digits[0] === '0') return true;
-    if (digits.length === 11 && digits[0] === '2' && digits[1] === '7') return true;
+        
+    if (digits.length === 10 && digits[0] === '0') 
+        return true;
+    if (digits.length === 11 && digits[0] === '2' && digits[1] === '7') 
+        return true;
     return false;
 }
 
 
 export function isAlphaOnly(str) {
-    if (typeof str !== 'string') return false;
+    if (typeof str !== 'string') 
+        return false;
     for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    if (code >= 65 && code <= 90) continue;
-    if (code >= 97 && code <= 122) continue;
-    return false;
+        const code = str.charCodeAt(i);
+        if (code >= 65 && code <= 90) 
+            continue;
+        if (code >= 97 && code <= 122)
+            continue;
+        return false;
     }
     return true;
 }
