@@ -2,10 +2,6 @@ import mongoose from 'mongoose';
 
 const userProfile = new mongoose.Schema({
 
-    owner: {
-        type: String,
-        required: true,
-    },
     identityNumber: {
         type: String,
         required: true,
@@ -33,6 +29,10 @@ const userProfile = new mongoose.Schema({
     title: {
         type: String,
         required: true
+    },
+    gender: {
+        type: String,
+        required: true,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
