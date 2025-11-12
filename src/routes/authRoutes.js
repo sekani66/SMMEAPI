@@ -84,8 +84,8 @@ router.post("/register", async (req, res) =>{
             surname,
             email,
             contact,
-            password
-            
+            password,
+            confirmPassword
         });
         
         await user.save();
