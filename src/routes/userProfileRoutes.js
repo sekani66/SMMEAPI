@@ -14,8 +14,8 @@ const router = express.Router();
 
 router.post("/userProfile", protectRoute, async( eq, res) => {
     try {
-        const { identityNumber, contact, email, name, lastName, title, gender } = req.body;
-        if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender)
+        const { identityNumber, contact, email, name, lastName, title, gender, age } = req.body;
+        if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender, !age)
         {
             return res.status(400).json({
                 message: "Please fill all the fields"
@@ -66,15 +66,21 @@ router.post("/userProfile", protectRoute, async( eq, res) => {
             );
         }
         const userProfile = new Profile({
-            owner,
             identityNumber,
             contact, 
             email,
             name,
             lastName,
             title,
+            gender,
+            age,
             user: req.user._id
         });
+        if(isNumeric(age)){
+            return res.status(400).json({
+                message: "Age can only contain digits"
+            })
+        }
 
         await userProfile.save();
         res.status(201).json(userProfile);
