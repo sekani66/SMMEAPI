@@ -13,7 +13,7 @@ router.post("/register", async (req, res) =>{
     try
     {
         const { name, surname, email, contact, password, confirmPassword } = req.body;
-        if(!name || !surname || !email || !contact ||!password || confirmPassword)
+        if(!name || !surname || !email || !contact ||!password || !confirmPassword)
         {
             return res.status(400).json(
                 {
