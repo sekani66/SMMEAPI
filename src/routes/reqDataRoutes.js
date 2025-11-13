@@ -72,11 +72,12 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         }
         const existingProfile = await Profile.findOne({ user: req.user._id });
         if (existingProfile) {
-            return ;
+            return res.status(200).json({success: true});
         }
+
         const id = await Profile.findOne({ identityNumber });
         if (id) {
-            return;
+            return res.status(200).json({success: true});
         }
         const userProfile = new Profile({
             identityNumber,
