@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/userProfile", protectRoute, async( req, res) => {
     try {
         const { identityNumber, contact, email, name, lastName, title, gender, age } = req.body;
-        if(!identityNumber || !contact || !email || !name || !lastName || !age)
+        if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender || !age)
         {
             return res.status(400).json({
                 message: "Please fill all the fields"
