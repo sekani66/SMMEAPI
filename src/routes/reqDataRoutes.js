@@ -86,7 +86,7 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         await userProfile.save();
 
     } catch (error) {
-        console.log("Error creating userProfile");
+        console.log("Error creating userProfile: ", error);
         res.status(500).json({
             message: error.message
         });
