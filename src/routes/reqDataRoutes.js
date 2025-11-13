@@ -75,7 +75,7 @@ router.post("/userProfile", protectRoute, async( req, res) => {
             return ;
         }
         const id = await Profile.findOne({ identityNumber });
-        if (duplicateEmail) {
+        if (id) {
             return;
         }
         const userProfile = new Profile({
