@@ -6,7 +6,7 @@ import {
     isNumeric
 } from '../models/Validations.js';
 import Profile from '../models/UserProfile.js';
-import BusinessProfile from '..models/BusinessProfile.js';
+import BusinessProfile from '../models/BusinessProfile.js';
 
 import protectRoute from '../middleware/auth.middleware.js';
 
