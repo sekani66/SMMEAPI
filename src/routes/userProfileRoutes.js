@@ -12,7 +12,7 @@ import protectRoute from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
-router.post("/userProfile", protectRoute, async( eq, res) => {
+router.post("/userProfile", protectRoute, async( req, res) => {
     try {
         const { identityNumber, contact, email, name, lastName, title, gender, age } = req.body;
         if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender, !age)
