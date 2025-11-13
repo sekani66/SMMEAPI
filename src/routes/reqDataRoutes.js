@@ -15,25 +15,25 @@ const router = express.Router();
 router.post("/userProfile", protectRoute, async( req, res) => {
     try {
         const { identityNumber, contact, email, name, lastName, title, gender, age } = req.body;
-        if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender, !age)
+        if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender || !age)
         {
             return res.status(400).json({
                 message: "Please fill all the fields"
             });
         } 
-        if(isNumeric(identityNumber)){
+        if(identityNumber && isNumeric(identityNumber)){
             return res.status(400).json({
                 message: "ID Number can only contain digits"
             });
         }
-        if(identityNumber.length != 13)
+        if(identityNumber && identityNumber.length !== 13)
         {
             return res.status(400).json(
                 {
                     message: "Invalid ID Number"
             });
         }
-        if(!isValidSouthAfricaNumber(contact))
+        if(contact && !isValidSouthAfricaNumber(contact))
         {
             return res.status(400).json(
                 {
@@ -49,7 +49,7 @@ router.post("/userProfile", protectRoute, async( req, res) => {
                 }
             );
         }
-        if(!isAlphaOnly(name))
+        if(name && !isAlphaOnly(name))
         {
             return res.status(400).json(
                 {
@@ -57,7 +57,7 @@ router.post("/userProfile", protectRoute, async( req, res) => {
                 }
             );
         }
-        if(!isAlphaOnly(lastName))
+        if(lastName && !isAlphaOnly(lastName))
         {
             return res.status(400).json(
                 {
@@ -84,9 +84,9 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         });
         
         await userProfile.save();
-
+        res.status(201).json({ message: "Profile successfully created" });
     } catch (error) {
-        console.log("Error creating userProfile: ", error);
+        console.log("Error creating User Profile: ", error);
         res.status(500).json({
             message: error.message
         });

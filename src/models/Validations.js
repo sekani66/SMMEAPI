@@ -59,7 +59,7 @@ export function isNumeric(str)
 
     for( let i = 0; i < str.length; i++){
         const c = str[i];
-        if(!isDigit)
+        if(!isDigit(c))
             return true;
     }
     return false;
