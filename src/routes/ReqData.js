@@ -24,9 +24,9 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         if(isNumeric(identityNumber)){
             return res.status(400).json({
                 message: "ID Number can only contain digits"
-            })
+            });
         }
-        if(identityNumber.length !== 13)
+        if(identityNumber.length != 13)
         {
             return res.status(400).json(
                 {
@@ -65,6 +65,12 @@ router.post("/userProfile", protectRoute, async( req, res) => {
                 }
             );
         }
+        if(isNumeric(age)){
+            return res.status(400).json({
+                message: "Age can only contain digits"
+            });
+        }
+
         const userProfile = new Profile({
             identityNumber,
             contact, 
@@ -76,14 +82,8 @@ router.post("/userProfile", protectRoute, async( req, res) => {
             age,
             user: req.user._id
         });
-        if(isNumeric(age)){
-            return res.status(400).json({
-                message: "Age can only contain digits"
-            })
-        }
-
+        
         await userProfile.save();
-        res.status(201).json(userProfile);
 
     } catch (error) {
         console.log("Error creating userProfile");

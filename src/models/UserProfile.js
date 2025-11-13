@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const userProfile = new mongoose.Schema({
+const profileSchema = new mongoose.Schema({
 
     identityNumber: {
         type: String,
@@ -45,5 +45,5 @@ const userProfile = new mongoose.Schema({
     }
 });
 
-const Profile = mongoose.model("Profile", userProfile);
+const Profile = mongoose.model("Profile", profileSchema);
 export default Profile;

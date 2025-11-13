@@ -1,5 +1,9 @@
 import express from 'express';
-import {isValidEmailControl,  isValidSouthAfricaNumber, isAlphaOnly } from '../models/Validations.js';
+import {
+    isValidEmailControl,  
+    isValidSouthAfricaNumber, 
+    isAlphaOnly 
+} from '../models/Validations.js';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 

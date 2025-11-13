@@ -26,11 +26,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
-    confirmPassword: {
-        type: String,
-        required: true,
-        minlength: 6
-    }
 });
 
 userSchema.pre("save", async function (next) {

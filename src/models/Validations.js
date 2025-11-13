@@ -60,9 +60,9 @@ export function isNumeric(str)
     for( let i = 0; i < str.length; i++){
         const c = str[i];
         if(!isDigit)
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 export  function isValidSouthAfricaNumber(str) {
         if (typeof str !== 'string')
