@@ -4,7 +4,7 @@ import cors from 'cors';
 import job from "./lib/cron.js";
 
 import authRoutes from './routes/authRoutes.js';
-import userProfileRoutes from './routes/userProfileRoutes.js';
+import reqDataRoutes from './routes/rqDataRoutes.js';
 import { connectDB } from './lib/db.js';
 
 
@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 job.start();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-app.use("/api/home", userProfileRoutes )
+app.use("/api/home", reqDataRoutes );
 
 app.listen(PORT, ()=> {
     console.log(`Server is running on port ${PORT}`);
