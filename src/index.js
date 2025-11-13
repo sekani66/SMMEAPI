@@ -4,7 +4,7 @@ import cors from 'cors';
 import job from "./lib/cron.js";
 
 import authRoutes from './routes/authRoutes.js';
-import reqDataRoutes from './routes/rqDataRoutes.js';
+import reqDataRoutes from './routes/reqDataRoutes.js';
 import { connectDB } from './lib/db.js';
 
 
