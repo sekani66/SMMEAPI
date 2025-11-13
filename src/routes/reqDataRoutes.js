@@ -70,7 +70,14 @@ router.post("/userProfile", protectRoute, async( req, res) => {
                 message: "Age can only contain digits"
             });
         }
-
+        const existingProfile = await Profile.findOne({ user: req.user._id });
+        if (existingProfile) {
+            return ;
+        }
+        const id = await Profile.findOne({ identityNumber });
+        if (duplicateEmail) {
+            return;
+        }
         const userProfile = new Profile({
             identityNumber,
             contact, 
@@ -84,6 +91,7 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         });
         
         await userProfile.save();
+
         res.status(201).json({ message: "Profile successfully created" });
     } catch (error) {
         console.log("Error creating User Profile: ", error);
