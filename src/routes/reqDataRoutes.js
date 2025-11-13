@@ -6,6 +6,7 @@ import {
     isNumeric
 } from '../models/Validations.js';
 import Profile from '../models/UserProfile.js';
+import BusinessProfile from '..models/BusinessProfile.js';
 
 import protectRoute from '../middleware/auth.middleware.js';
 
@@ -17,53 +18,30 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         const { identityNumber, contact, email, name, lastName, title, gender, age } = req.body;
         if(!identityNumber || !contact || !email || !name || !lastName || !title || !gender || !age)
         {
-            return res.status(400).json({
-                message: "Please fill all the fields"
-            });
+            return res.status(400).json({message: "Please fill all the required fields" });
         } 
         if(identityNumber && isNumeric(identityNumber)){
-            return res.status(400).json({
-                message: "ID Number can only contain digits"
-            });
+            return res.status(400).json({message: "ID Number can only contain digits"});
         }
         if(identityNumber && identityNumber.length !== 13)
         {
-            return res.status(400).json(
-                {
-                    message: "Invalid ID Number"
-            });
+            return res.status(400).json({message: "Invalid ID Number"});
         }
         if(contact && !isValidSouthAfricaNumber(contact))
         {
-            return res.status(400).json(
-                {
-                    number: "Invalid contact number format"
-                }
-            );
+            return res.status(400).json({number: "Invalid contact number format"});
         }
         if(!isValidEmailControl(email))
         {
-            return res.status(400).json(
-                {
-                    message: "Invalid email address format"
-                }
-            );
+            return res.status(400).json({message: "Invalid email address format"});
         }
         if(name && !isAlphaOnly(name))
         {
-            return res.status(400).json(
-                {
-                    message: "Name can only contain letters"
-                }
-            );
+            return res.status(400).json({message: "First Name can only contain letters"});
         }
         if(lastName && !isAlphaOnly(lastName))
         {
-            return res.status(400).json(
-                {
-                    message: "Last name can only contain letters"
-                }
-            );
+            return res.status(400).json({message: "Last name can only contain letters"});
         }
         if(isNumeric(age)){
             return res.status(400).json({
@@ -92,13 +70,75 @@ router.post("/userProfile", protectRoute, async( req, res) => {
         });
         
         await userProfile.save();
-
-        res.status(201).json({ message: "Profile successfully created" });
     } catch (error) {
         console.log("Error creating User Profile: ", error);
         res.status(500).json({
             message: error.message
         });
+    }
+});
+
+router.post("/businessProfile", protectRoute, async(req, res) => {
+    try {
+        const { businessName, regNo, taxNo, businessType, businessSector, tradingYears, 
+                employeeNo, email, contact, physicalAddress, postalAddress } = req.body;
+
+        if(!businessName || !regNo || !taxNo || !businessType || !businessSector || !tradingYears 
+            || !employeeNo || !email || !contact || !physicalAddress || !postalAddress){
+
+                return res.status(400).json({message: "Please fill all the required fields"})
+            }
+            if(regNo && isNumeric(regNo)){
+                return res.status(400).json({message: "Registration Number can only include digits"});
+            }
+            if(regNo && regNo.length < 12){
+                return res.status(400).json({message: "Invalid Registration Number"});
+            }
+            if(taxNo && isNumeric(taxNo)){
+                return res.status(400).json({message: "Tax Number can only include digits"});
+            }
+            if(taxNo && taxNo.length < 10){
+                return res.status(400).json({message: "Invalid Tax Number"});
+            }     
+            if(tradingYears && isNumeric(tradingYears)){
+                return res.status(400).json({message: "Trading years is number of business operation years"});
+            }
+            if(employeeNo && isNumeric(employeeNo)){
+                return res.status(400).json({message: "Invalid number of employees"});
+            }
+            if(email && !isValidEmailControl(email)){
+                return res.status(400).json({message: "Invalid business email"});
+            }
+            if(contact && !isValidSouthAfricanNumber(contact)){
+                return res.status(400).json({message: "Invalid business contact number"});
+            }
+            const existingProfile = await Profile.findOne({ user: req.user._id });
+            if (existingProfile) {
+                return res.status(200).json({success: true});
+            }
+            const id = await Profile.findOne({ identityNumber });
+            if (id) {
+                return res.status(200).json({success: true});
+            }
+
+            const businessProfile = new BusinessProfile({
+                businessName, 
+                regNo, 
+                taxNo, 
+                businessType, 
+                businessSector, 
+                tradingYears, 
+                employeeNo, 
+                email, 
+                contact, 
+                physicalAddress, 
+                postalAddress, 
+                user: req.user._id
+            });
+            await businessProfile.save();
+    } catch (error) {
+        console.log("Error creating Business Profile: ", error);
+        res.status(500).json({message: error.message});
     }
 });
 

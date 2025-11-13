@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const profileSchema = new mongoose.Schema({
-
     identityNumber: {
         type: String,
         required: true,
