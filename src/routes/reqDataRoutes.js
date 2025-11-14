@@ -85,7 +85,6 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
 
         if(!businessName || !regNo || !taxNo || !businessType || !businessSector || !tradingYears 
             || !employeeNo || !email || !contact || !physicalAddress || !postalAddress){
-
                 return res.status(400).json({message: "Please fill all the required fields"})
             }
             if(regNo && isNumeric(regNo)){
@@ -109,12 +108,23 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
             if(email && !isValidEmailControl(email)){
                 return res.status(400).json({message: "Invalid business email"});
             }
-            if(contact && !isValidSouthAfricaNumber(contact)){
+            if(contact && !isValidSouthAfricanNumber(contact)){
                 return res.status(400).json({message: "Invalid business contact number"});
             }
-            const existingProfile = await Profile.findOne({ taxNo });
+            const existingProfile = await Profile.findOne({ user: req.user._id });
+            if (existingProfile) {
+                return res.status(200).json({success: true});
+            }
             const id = await Profile.findOne({ regNo });
-            if (id && existingProfile ) {
+            if (id) {
+                return res.status(200).json({success: true});
+            }
+            const tax = await Profile.findOne({ taxNo });
+            if (tax) {
+                return res.status(200).json({success: true});
+            }
+            const mail = await Profile.findOne({ email });
+            if (mail) {
                 return res.status(200).json({success: true});
             }
 
