@@ -109,7 +109,7 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
             if(email && !isValidEmailControl(email)){
                 return res.status(400).json({message: "Invalid business email"});
             }
-            if(contact && !isValidSouthAfricanNumber(contact)){
+            if(contact && !isValidSouthAfricaNumber(contact)){
                 return res.status(400).json({message: "Invalid business contact number"});
             }
             const existingProfile = await Profile.findOne({ user: req.user._id });
