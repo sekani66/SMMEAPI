@@ -112,12 +112,10 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
             if(contact && !isValidSouthAfricaNumber(contact)){
                 return res.status(400).json({message: "Invalid business contact number"});
             }
+            
             const existingProfile = await Profile.findOne({ user: req.user._id });
-            if (existingProfile) {
-                return res.status(200).json({success: true});
-            }
-            const id = await Profile.findOne({ identityNumber });
-            if (id) {
+            const id = await Profile.findOne({ regNo });
+            if (id && existingProfile) {
                 return res.status(200).json({success: true});
             }
 
