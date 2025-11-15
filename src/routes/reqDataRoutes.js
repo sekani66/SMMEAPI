@@ -7,6 +7,7 @@ import {
 } from '../models/Validations.js';
 import Profile from '../models/UserProfile.js';
 import BusinessProfile from '../models/BusinessProfile.js';
+import OwnerProfile from '../models/OwnerProfile.js';
 
 import protectRoute from '../middleware/auth.middleware.js';
 
@@ -148,5 +149,62 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
         res.status(500).json({message: error.message});
     }
 });
+
+router.post("/ownerDetails", protectRoute, async( req, res ) =>{
+    try {
+        const { ownerName, ownerLastName, ownerID, ownerEmail, ownerContact, maritalStatus, ownerAge, homeAddress, shareOwners } = req.body
+        if(!ownerName || !ownerLastName || !ownerID || !ownerEmail || !ownerContact || !maritalStatus || !ownerAge || !homeAddress || !shareOwners){
+            return res.status(400).json({message: "Please fill all the required fields"});
+        }
+        if(ownerName && !isAlphaOnly(ownerName)){
+            return res.status(400).json({message: "Invalid first name format"});
+        }
+        if(ownerLastName && !isAlphaOnly(ownerLastName)){
+            return res.status(400).json({message: "Invalid last name format"});
+        }
+        if(ownerID && isNumeric(ownerID) || ownerID.length < 13){
+            return res.status(400).json({message: "Invalid ID number"})
+        }
+        if(ownerEmail && !isValidEmailControl(ownerEmail)){
+            return res.status(400).json({message: "Invalid email address format"});
+        }
+        if(ownerContact && !isValidSouthAfricaNumber(ownerContact)){
+            res.status(400).json({message: "Invalid contact number"});
+        }
+        if(maritalStatus && !isAlphaOnly(maritalStatus)){
+            return res.status(400).json({message: "Invalid marital status"});
+        }
+        if(ownerAge && isNumeric(ownerAge)){
+            return res.status(400).json({message: "Invalid age number value"});
+        }
+        if(shareOwners && isNumeric(shareOwners)){
+            return res.status(400).json({message: "Invalid share holders value"});
+        }
+        const id = await OwnerProfile.findOne({ ownerID });
+        if(id) return res.status(200).json({success: true});
+        const email = await OwnerProfile.findOne({ ownerEmail });
+        if(email) return res.status(200).json({success: true});
+        const user = await OwnerProfile.findOne({ user: req.user._id});
+        if(user) return res.status(200).json({success: true});
+
+        const ownerDetails = new OwnerProfile({
+            ownerName,
+            ownerLastName,
+            ownerID,
+            ownerEmail,
+            ownerContact,
+            maritalStatus,
+            ownerAge,
+            homeAddress,
+            shareOwners,
+            user: req.user._id
+        });
+        await ownerDetails.save();
+
+    } catch (error) {
+        console.log("Error creating Owner Details: ", error);
+        res.status(500).json({message: error.message});
+    }
+})
 
 export default router;
