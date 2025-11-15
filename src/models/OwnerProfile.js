@@ -43,6 +43,7 @@ const ownerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+    },
 });
 const OwnerProfile = mongoose.model("Owner", ownerSchema);
 export default OwnerProfile;
