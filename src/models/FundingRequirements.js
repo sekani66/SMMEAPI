@@ -9,6 +9,10 @@ const fundReqSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    fundingType: {
+        type: String,
+        required: true,
+    },
     paymentPlan: {
         type: String,
         required: true,

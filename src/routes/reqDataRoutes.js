@@ -209,8 +209,8 @@ router.post("/ownerDetails", protectRoute, async( req, res ) =>{
 });
 router.post("/funds", protectRoute, async( req, res) =>{
     try {
-        const { amount, purpose, paymentPlan, exitStrategy } = req.body;
-        if(!amount || !purpose || !paymentPlan || !exitStrategy){
+        const { amount, purpose, fundingType, paymentPlan, exitStrategy } = req.body;
+        if(!amount || !purpose || !fundingType || !paymentPlan || !exitStrategy ){
             return res.status(400).json({ message: "Please fill all the required fields"});
         }
         const id = await FundingRequirements.findOne({ user: req.user._id});
@@ -218,7 +218,8 @@ router.post("/funds", protectRoute, async( req, res) =>{
 
         const fundingRequirements = new FundingRequirements({
             amount,
-            purpose,
+            purpose,            
+            fundingType,
             paymentPlan,
             exitStrategy,
             user: req.user._id
@@ -226,7 +227,7 @@ router.post("/funds", protectRoute, async( req, res) =>{
         await fundingRequirements.save();
     } catch (error) {
         console.log("Error saving funding requirements");
-        return re.status(500).json({message: error.message});
+        return res.status(500).json({message: error.message});
     }
 });
 export default router;
