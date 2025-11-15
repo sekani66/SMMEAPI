@@ -265,7 +265,7 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 50 }
 }).fields(uploadFields);
 
-app.post('/financialDocs', (req, res) => {
+router.post('/financialDocs', (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
             return res.status(400).json({ message: err.message });
