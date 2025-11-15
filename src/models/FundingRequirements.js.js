@@ -23,5 +23,5 @@ const fundReqSchema = new mongoose.Schema({
         required: true,
     },
 });
-const FundingRequirements = mongoose.model("FundingRquirements", fundReqSchema);
+const FundingRequirements = mongoose.model("FundingRequirements", fundReqSchema);
 export default FundingRequirements;
