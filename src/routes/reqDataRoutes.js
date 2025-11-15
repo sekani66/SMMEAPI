@@ -9,12 +9,10 @@ import Profile from '../models/UserProfile.js';
 import BusinessProfile from '../models/BusinessProfile.js';
 import OwnerProfile from '../models/OwnerProfile.js';
 import FundingRequirements from '../models/FundingRequirements.js';
-import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import multer from 'multer';
 import FinancialPdf from '../models/FinancialDocs.js'; 
 import protectRoute from '../middleware/auth.middleware.js';
 
