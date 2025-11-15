@@ -8,6 +8,7 @@ import {
 import Profile from '../models/UserProfile.js';
 import BusinessProfile from '../models/BusinessProfile.js';
 import OwnerProfile from '../models/OwnerProfile.js';
+import FundingRequirements from '../models/FundingRequirements.js';
 
 import protectRoute from '../middleware/auth.middleware.js';
 
@@ -152,7 +153,7 @@ router.post("/businessProfile", protectRoute, async(req, res) => {
 
 router.post("/ownerDetails", protectRoute, async( req, res ) =>{
     try {
-        const { ownerName, ownerLastName, ownerID, ownerEmail, ownerContact, maritalStatus, ownerAge, homeAddress, shareOwners } = req.body
+        const { ownerName, ownerLastName, ownerID, ownerEmail, ownerContact, maritalStatus, ownerAge, homeAddress, shareOwners } = req.body;
         if(!ownerName || !ownerLastName || !ownerID || !ownerEmail || !ownerContact || !maritalStatus || !ownerAge || !homeAddress || !shareOwners){
             return res.status(400).json({message: "Please fill all the required fields"});
         }
@@ -203,8 +204,29 @@ router.post("/ownerDetails", protectRoute, async( req, res ) =>{
 
     } catch (error) {
         console.log("Error creating Owner Details: ", error);
-        res.status(500).json({message: error.message});
+        return res.status(500).json({message: error.message});
     }
-})
+});
+router.post("/funds", protectRoute, async( req, res) =>{
+    try {
+        const { amount, purpose, paymentPlan, exitStrategy } = req.body;
+        if(!amount || !purpose || !paymentPlan || !exitStrategy){
+            return res.status(400).json({ message: "Please fill all the required fields"});
+        }
+        const id = await FundingRequirements.findOne({ user: req.user._id});
+        if(id) return res.status(200).json({success: true});
 
+        const fundingRequirements = new FundingRequirements({
+            amount,
+            purpose,
+            paymentPlan,
+            exitStrategy,
+            user: req.user._id
+        });
+        await fundingRequirements.save();
+    } catch (error) {
+        console.log("Error saving funding requirements");
+        return re.status(500).json({message: error.message});
+    }
+});
 export default router;
