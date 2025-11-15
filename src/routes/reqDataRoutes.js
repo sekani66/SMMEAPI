@@ -13,7 +13,7 @@ import FundingRequirements from '../models/FundingRequirements.js';
 import multer from 'multer';
 import FinancialPdf from '../models/FinancialDocs.js'; // Import your Mongoose model
 import protectRoute from '../middleware/auth.middleware.js';
-
+import fs from 'fs';
 
 const router = express.Router();
 
@@ -232,6 +232,13 @@ router.post("/funds", protectRoute, async( req, res) =>{
         return res.status(500).json({message: error.message});
     }
 });
+
+
+
+const uploadPath = path.join(__dirname, 'uploads/pdfs');
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
 
 
 const storage = multer.diskStorage({
