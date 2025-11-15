@@ -10,6 +10,8 @@ import BusinessProfile from '../models/BusinessProfile.js';
 import OwnerProfile from '../models/OwnerProfile.js';
 import FundingRequirements from '../models/FundingRequirements.js';
 
+import multer from 'multer';
+import FinancialPdf from '../models/FinancialDocs.js'; // Import your Mongoose model
 import protectRoute from '../middleware/auth.middleware.js';
 
 
@@ -229,5 +231,71 @@ router.post("/funds", protectRoute, async( req, res) =>{
         console.log("Error saving funding requirements");
         return res.status(500).json({message: error.message});
     }
+});
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/pdfs/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
+    }
+});
+
+const uploadFields = [
+    { name: 'INCOME_STATEMENT', maxCount: 1 },
+    { name: 'BALANCE_SHEET', maxCount: 1 },
+    { name: 'CASH_FLOW_STATEMENT', maxCount: 1 },
+    { name: 'LATEST_MANAGEMENT_ACCOUNTS', maxCount: 1 },
+    { name: 'BANK_STATEMENTS', maxCount: 1 },
+    { name: 'TAX_CLEARANCE_CERTIFICATE', maxCount: 1 }
+];
+
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only .pdf format allowed!'), false);
+        }
+    },
+    limits: { fileSize: 1024 * 1024 * 50 }
+}).fields(uploadFields);
+
+app.post('/financialDocs', (req, res) => {
+    upload(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ message: 'You must upload at least one document.' });
+        }
+
+        try {
+            const pdfDocs = [];
+            for (const key in req.files) {
+                const file = req.files[key][0];
+
+                const newPdf = new FinancialPdf({
+                    documentType: file.fieldname, 
+                    filename: file.originalname,
+                    storagePath: file.path,
+                    mimetype: file.mimetype,
+                    size: file.size
+                });
+                pdfDocs.push(newPdf);
+            }
+            const savedPdfs = await FinancialPdf.insertMany(pdfDocs);
+            res.status(201).json({
+                message: `${savedPdfs.length} documents uploaded successfully!`,
+                files: savedPdfs
+            });
+        } catch (dbError) {
+            res.status(500).json({ message: 'Database error.', error: dbError });
+        }
+    });
 });
 export default router;
