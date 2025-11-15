@@ -9,7 +9,11 @@ import Profile from '../models/UserProfile.js';
 import BusinessProfile from '../models/BusinessProfile.js';
 import OwnerProfile from '../models/OwnerProfile.js';
 import FundingRequirements from '../models/FundingRequirements.js';
-
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import multer from 'multer';
 import FinancialPdf from '../models/FinancialDocs.js'; 
 import protectRoute from '../middleware/auth.middleware.js';
@@ -233,9 +237,17 @@ router.post("/funds", protectRoute, async( req, res) =>{
 });
 
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadPath = path.join(__dirname, '../uploads/pdfs');
+
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '../uploads/pdfs');
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

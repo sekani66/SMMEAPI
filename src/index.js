@@ -27,7 +27,7 @@ job.start();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/home", reqDataRoutes );
-app.use('/files', express.static(path.join(__dirname, 'uploads/pdfs')));
+app.use('/files', express.static(uploadPath));
 app.listen(PORT, ()=> {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
