@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-
-const financialDocsSchema = new mongoose.Schema({
+const supportingDocsSchema = new mongoose.Schema({
     documentType: {
         type: String,
         required: true,
@@ -34,5 +33,5 @@ const financialDocsSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const FinancialDocs = mongoose.model('FinancialPdf', financialDocsSchema);
-export default FinancialDocs;
+const SupportingDocs = mongoose.model('SupportingDocs', supportingDocsSchema);
+export default SupportingDocs;

@@ -9,14 +9,32 @@ import Profile from '../models/UserProfile.js';
 import BusinessProfile from '../models/BusinessProfile.js';
 import OwnerProfile from '../models/OwnerProfile.js';
 import FundingRequirements from '../models/FundingRequirements.js';
+
+import FinancialDocs from '../models/FinancialDocs.js'; 
+import protectRoute from '../middleware/auth.middleware.js';
+import SupportingDocs from '../models/SupportingDocs.js';
+
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import FinancialPdf from '../models/FinancialDocs.js'; 
-import protectRoute from '../middleware/auth.middleware.js';
 
 const router = express.Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadPath = path.join(__dirname, '../uploads/pdfs');
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
+    }
+});
+
 
 router.post("/userProfile", protectRoute, async( req, res) => {
     try {
@@ -236,33 +254,17 @@ router.post("/funds", protectRoute, async( req, res) =>{
 
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadPath = path.join(__dirname, '../uploads/pdfs');
-
-if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
-    }
-});
-
-const uploadFields = [
+const financialDocuments = [
     { name: 'INCOME_STATEMENT', maxCount: 1 },
     { name: 'BALANCE_SHEET', maxCount: 1 },
     { name: 'CASH_FLOW_STATEMENT', maxCount: 1 },
-    { name: 'LATEST_MANAGEMENT_ACCOUNTS', maxCount: 1 },
+    { name: 'ANNUAL_FINANCIAL_STATEMENTS', maxCount: 1 },
     { name: 'BANK_STATEMENTS', maxCount: 1 },
-    { name: 'TAX_CLEARANCE_CERTIFICATE', maxCount: 1 }
+    { name: 'MANAGEMENT_ACCOUNTS', maxCount: 1 },
+    
 ];
 
-const upload = multer({
+const financialDocumentsUploader = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'application/pdf') {
@@ -272,32 +274,87 @@ const upload = multer({
         }
     },
     limits: { fileSize: 1024 * 1024 * 50 }
-}).fields(uploadFields);
+}).fields(financialDocuments);
 
-router.post('/financialDocs', (req, res) => {
-    upload(req, res, async (err) => {
+router.post('/financialDocs', protectRoute, (req, res) => {
+    financialDocumentsUploader(req, res, async (err) => {
         if (err) {
             return res.status(400).json({ message: err.message });
         }
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({ message: 'You must upload at least one document.' });
         }
-
         try {
             const pdfDocs = [];
             for (const key in req.files) {
                 const file = req.files[key][0];
-
-                const newPdf = new FinancialPdf({
+                const newPdf = new FinancialDocs({
                     documentType: file.fieldname, 
                     filename: file.originalname,
                     storagePath: file.path,
                     mimetype: file.mimetype,
-                    size: file.size
+                    size: file.size,
+                    user: req.user._id
                 });
                 pdfDocs.push(newPdf);
             }
-            const savedPdfs = await FinancialPdf.insertMany(pdfDocs);
+            const savedPdfs = await FinancialDocs.insertMany(pdfDocs);
+            res.status(201).json({
+                message: `${savedPdfs.length} documents uploaded successfully!`,
+                files: savedPdfs
+            });
+        } catch (dbError) {
+            res.status(500).json({ message: 'Database error.', error: dbError });
+        }
+    });
+});
+
+const supportingDocuments = [
+    { name: 'BUSINESS_REGISTRATION_CERTIFICATE', maxCount: 1 },
+    { name: 'BUSINESS_OWNERS_ID', maxCount: 1 },
+    { name: 'BUSINESS_PROOF_OF_ADDRESS', maxCount: 1 },
+    { name: 'BUSINESS_PLAN', maxCount: 1 },
+    { name: 'BUSINESS_PROFILE', maxCount: 1 },
+    
+    { name: 'LETTER_OF_AWARD', maxCount: 1 },
+    { name: 'TAX_CLEARANCE_CERTIFICATE', maxCount: 1 }
+];
+
+const supportingDocumentsUploader = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only .pdf format allowed!'), false);
+        }
+    },
+    limits: { fileSize: 1024 * 1024 * 50 }
+}).fields(supportingDocuments);
+
+router.post('/supportingDocs', protectRoute, (req, res) => {
+    supportingDocumentsUploader(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ message: 'You must upload at least one document.' });
+        }
+        try {
+            const pdfDocs = [];
+            for (const key in req.files) {
+                const file = req.files[key][0];
+                const newPdf = new SupportingDocs({
+                    documentType: file.fieldname, 
+                    filename: file.originalname,
+                    storagePath: file.path,
+                    mimetype: file.mimetype,
+                    size: file.size,
+                    user: req.user._id
+                });
+                pdfDocs.push(newPdf);
+            }
+            const savedPdfs = await SupportingDocs.insertMany(pdfDocs);
             res.status(201).json({
                 message: `${savedPdfs.length} documents uploaded successfully!`,
                 files: savedPdfs
