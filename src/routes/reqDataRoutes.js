@@ -315,7 +315,6 @@ const supportingDocuments = [
     { name: 'BUSINESS_PROOF_OF_ADDRESS', maxCount: 1 },
     { name: 'BUSINESS_PLAN', maxCount: 1 },
     { name: 'BUSINESS_PROFILE', maxCount: 1 },
-    
     { name: 'LETTER_OF_AWARD', maxCount: 1 },
     { name: 'TAX_CLEARANCE_CERTIFICATE', maxCount: 1 }
 ];
